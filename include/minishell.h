@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pandemonium <pandemonium@student.42.fr>    +#+  +:+       +#+        */
+/*   By: lflayeux <lflayeux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 11:17:39 by lflayeux          #+#    #+#             */
-/*   Updated: 2025/05/25 22:31:46 by pandemonium      ###   ########.fr       */
+/*   Updated: 2025/05/26 19:01:09 by lflayeux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,13 +54,23 @@ char						*get_pid(void);
 char						*find_var_spe(char *s, int index);
 
 // ==============================================
+// ============== STRUCT GLOBALE ================
+// ==============================================
+typedef struct s_env
+{
+	char	*var;
+	struct s_env	*next;
+}			t_env;
+
+
+// ==============================================
 // ================== SIGNALS ===================
 // ==============================================
 
 typedef struct s_signal
 {
-	struct sigaction		ctrl_c;
-	struct sigaction		ctrl_dump;
+	struct sigaction		*ctrl_c;
+	struct sigaction		*ctrl_dump;
 }							t_signal;
 
 void						set_signal(t_signal *signals);
@@ -157,5 +167,18 @@ void						test_signals(t_signal signals, char **env);
 
 // === BUILT_IN ===
 void    built_in(t_exec **exec, int *i, char ***env);
+
+
+typedef struct	s_shell
+{
+	t_signal	*signals;
+	t_tok		*tok;
+	t_exec		*exec;
+	t_env		*env;
+	t_env		*secret;
+	//t_malloc	*malloc;
+	// error
+	//tab pid_t child
+}				t_shell;
 
 #endif

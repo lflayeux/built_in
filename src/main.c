@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pandemonium <pandemonium@student.42.fr>    +#+  +:+       +#+        */
+/*   By: lflayeux <lflayeux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 11:19:08 by lflayeux          #+#    #+#             */
-/*   Updated: 2025/05/25 23:58:26 by pandemonium      ###   ########.fr       */
+/*   Updated: 2025/05/26 19:41:01 by lflayeux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -226,6 +226,7 @@ void	execute_input(char *input, char **env)
 	t_exec	*exec;
 	int		i;
 	int		j;
+	int old_j;
 	t_tok	*tmp;
 	t_tok	*tmp2;
 	int		past_len;
@@ -318,9 +319,10 @@ void	execute_input(char *input, char **env)
 			while ((tmp4->cmd)[j])
 			{
 			    printf("\t\tcmd num %d: %s\n", j, (tmp4->cmd)[j]);
-			    int old_j = j;
+			    printf("ERROR ENV CONNARD\n");
+				old_j = j;
+				printf("ERROR ENV CONNARD\n");
 			    built_in(&tmp4, &j, &env);
-				printf("testetst  %s\n", env[0]);
 			    if (j == old_j)
 			        j++;
 			}
@@ -353,44 +355,94 @@ void	execute_input(char *input, char **env)
 	// pipex(&exec, env);
 	// printf(YLW"\n============ FIN TEST REAL EXEC===========\n"RST);
 }
+t_env	*ft_lstnew_env(char *var)
+{
+	t_env	*new;
+
+	new = malloc(sizeof(t_env));
+	if (new == NULL)
+		return (0);
+	new->var = var;
+	new->next = NULL;
+	return (new);
+}
+
+t_env	*ft_lstlast_env(t_env *lst)
+{
+	if (!lst)
+		return (0);
+	while (lst->next != NULL)
+		lst = lst->next;
+	return (lst);
+}
+
+// AJOUTE LE NVEAU MAILLON A LA FIN DE LA LISTE
+void	ft_lstadd_back_env(t_env **env, t_env *new)
+{
+	t_env	*last;
+
+	if (env == NULL)
+		return ;
+	if (*env == NULL)
+	{
+		*env = new;
+		return ;
+	}
+	last = ft_lstlast_env(*env);
+	last->next = new;
+}
+t_env *init_env(char **env)
+{
+	int	i;
+	t_env	*new_env;
+
+	i = 0;
+	new_env = NULL;
+	while (env[i])
+	{
+		ft_lstadd_back_env(&new_env, ft_lstnew_env(env[i]));
+		i++;	
+	}
+	return (new_env);
+}
 
 int	main(int argc, char **argv, char **envp)
 {
-	char		*input;
-	t_signal	signals;
-	// REMPLACEMENT ENVP
-	char **env;
-	int len;
-	int i;
+	// char		*input;
+	t_signal	*signals;
+	t_shell		*shell;
 
-	len = 0;
-	i = 0;
-	while (envp[len])
-		len++;
-	env = ft_calloc(len + 1, sizeof(char *));
-	if (env == NULL)
-		return (0);
-	while (envp[i])
-	{
-		env[i] = ft_strdup(envp[i]);
-		i++;
-	}
-	// ======================
+	shell = malloc(sizeof(t_shell));
+	signals = malloc(sizeof(t_signal));
+	shell->signals = signals;
+	shell->tok = NULL;
+	shell->exec = NULL;
+	shell->env = init_env(envp);
+	shell->secret = init_env(envp);
+
 	(void)argc;
 	(void)argv;
-	set_signal(&signals);
+	t_env *tmp = shell->env; 
+	while (tmp->next != NULL)
+	{
+		printf("%s\n", tmp->var);
+		tmp= tmp->next;
+	}
+	//========================================================================
+	//========================================================================
+	set_signal(&(shell->signals));
 	while (1)
 	{
-		input = readline(PROMPT);
-		if (input == NULL || ft_strcmp(input, "exit") == 0)
-			return (printf("exit"), 0);
-		if (*input)
-		{
-			add_history(input);
-			//test_signals(signals, env);
-			execute_input(input, env);
-		}
-		reset_signals(&signals);
+		// input = readline(PROMPT);
+		// if (input == NULL || ft_strcmp(input, "exit") == 0)
+		// 	return (printf("exit"), 0);
+		// if (*input)
+		// {
+		// 	add_history(input);
+		// 	//test_signals(signals, env);
+		// 	execute_input(input, &shell);
+		// }
+		// reset_signals(&signals);
 	}
 }
 // ==============================================
