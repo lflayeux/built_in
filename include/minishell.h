@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lflayeux <lflayeux@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pandemonium <pandemonium@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 11:17:39 by lflayeux          #+#    #+#             */
-/*   Updated: 2025/05/22 18:52:30 by lflayeux         ###   ########.fr       */
+/*   Updated: 2025/05/25 22:31:46 by pandemonium      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,8 +106,11 @@ typedef struct s_exec_pipeline
 	char					**cmd;
 	char					*infile;
 	char					*outfile;
+	char					*delimiter;
 	bool					if_infile;
 	bool					if_outfile;
+	bool					if_append;
+	bool					if_here_doc;
 	struct s_exec_pipeline	*pipe_to;
 }							t_exec;
 
@@ -124,9 +127,35 @@ void						create_lst_exec(t_exec **lst_exec, t_tok **token);
 void						ft_lstadd_back_exec(t_exec **token, t_exec *new);
 t_exec						*ft_lstlast_exec(t_exec *lst);
 
+// === PIPEX MODIF ===
+
+typedef struct s_pipex
+{
+	char	**av;
+	int		ac;
+	char	**envp;
+	pid_t	*child_tab;
+	int		fd_infile;
+	int		fd_outfile;
+}			t_pipex;
+
+int							pipex(t_exec **lst_exec, char **envp);
+
+char						**ft_split_dif(char const *s, char c);
+
+// int							here_doc_proc(char *delimiter);
+
+int							exec_cmd(char **envp, char **cmd);
+
+// === HERE_DOC ===
+
+int							loop_here_doc(char *delimiter, int *end);
+
 // === TESTS ===
 
 void						test_signals(t_signal signals, char **env);
 
-void    built_in(t_exec **exec, int *i);
+// === BUILT_IN ===
+void    built_in(t_exec **exec, int *i, char ***env);
+
 #endif

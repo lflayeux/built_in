@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lflayeux <lflayeux@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pandemonium <pandemonium@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 11:19:08 by lflayeux          #+#    #+#             */
-/*   Updated: 2025/05/22 18:52:31 by lflayeux         ###   ########.fr       */
+/*   Updated: 2025/05/25 23:58:26 by pandemonium      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -319,28 +319,65 @@ void	execute_input(char *input, char **env)
 			{
 			    printf("\t\tcmd num %d: %s\n", j, (tmp4->cmd)[j]);
 			    int old_j = j;
-			    built_in(&tmp4, &j);
+			    built_in(&tmp4, &j, &env);
+				printf("testetst  %s\n", env[0]);
 			    if (j == old_j)
-			        j++; // on incrémente *seulement* si le builtin ne l’a pas déjà fait
+			        j++;
 			}
 		}
 		else
 			printf("\t\tcmd inexistante\n");
 		printf("\tinfile:%d,   %s\n", tmp4->if_infile, tmp4->infile);
 		printf("\toutfile:%d,   %s\n", tmp4->if_outfile, tmp4->outfile);
+		printf("\there_doc:%d,   %s\n", tmp4->if_here_doc, tmp4->delimiter);
+		printf("\tappend:%d,   %s\n", tmp4->if_append, tmp4->outfile);
 		tmp4 = tmp4->pipe_to;
 	}
 	//============ FIN TEST LST EXEC PIPE PROCESS===========
+
+	//============ TEST REAL EXEC===========
+	// printf("\n\n" YLW);
+	// printf("==============================================\n");
+	// printf("==============REAL EXEC ======================\n");
+	// printf("==============================================\n");
+	// printf("\n" RST);
+
+	// // token = NULL;
+	// // exec = NULL;
+	// // while (*input != '\0')
+	// // {
+	// // 	tokenize(&input, &token);
+	// // }
+	// // word_identification(&token, env);
+	// // create_lst_exec(&exec, &token);
+	// pipex(&exec, env);
+	// printf(YLW"\n============ FIN TEST REAL EXEC===========\n"RST);
 }
 
-int	main(int argc, char **argv, char **env)
+int	main(int argc, char **argv, char **envp)
 {
 	char		*input;
 	t_signal	signals;
+	// REMPLACEMENT ENVP
+	char **env;
+	int len;
+	int i;
 
+	len = 0;
+	i = 0;
+	while (envp[len])
+		len++;
+	env = ft_calloc(len + 1, sizeof(char *));
+	if (env == NULL)
+		return (0);
+	while (envp[i])
+	{
+		env[i] = ft_strdup(envp[i]);
+		i++;
+	}
+	// ======================
 	(void)argc;
 	(void)argv;
-	(void)env;
 	set_signal(&signals);
 	while (1)
 	{
