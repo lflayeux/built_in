@@ -6,7 +6,7 @@
 /*   By: lflayeux <lflayeux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 11:17:39 by lflayeux          #+#    #+#             */
-/*   Updated: 2025/05/26 19:01:09 by lflayeux         ###   ########.fr       */
+/*   Updated: 2025/05/27 15:07:12 by lflayeux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,19 +49,10 @@
 // ==============================================
 
 char						*check_dollar_env(char **token, int *i, char **env);
-int							expansion_len(char **token, char **env);
+char						**init_env(char **envp);
 char						*get_pid(void);
 char						*find_var_spe(char *s, int index);
-
-// ==============================================
-// ============== STRUCT GLOBALE ================
-// ==============================================
-typedef struct s_env
-{
-	char	*var;
-	struct s_env	*next;
-}			t_env;
-
+const char					*get_token_name(int type);
 
 // ==============================================
 // ================== SIGNALS ===================
@@ -69,8 +60,8 @@ typedef struct s_env
 
 typedef struct s_signal
 {
-	struct sigaction		*ctrl_c;
-	struct sigaction		*ctrl_dump;
+	struct sigaction		ctrl_c;
+	struct sigaction		ctrl_dump;
 }							t_signal;
 
 void						set_signal(t_signal *signals);
@@ -124,10 +115,6 @@ typedef struct s_exec_pipeline
 	struct s_exec_pipeline	*pipe_to;
 }							t_exec;
 
-// === WORD PARSING ===
-
-int							word_identification(t_tok **token, char **env);
-
 // === PIPE PROCESS ===
 
 void						create_lst_exec(t_exec **lst_exec, t_tok **token);
@@ -149,7 +136,7 @@ typedef struct s_pipex
 	int		fd_outfile;
 }			t_pipex;
 
-int							pipex(t_exec **lst_exec, char **envp);
+int							pipex(t_exec *lst_exec, char **envp);
 
 char						**ft_split_dif(char const *s, char c);
 
@@ -165,8 +152,7 @@ int							loop_here_doc(char *delimiter, int *end);
 
 void						test_signals(t_signal signals, char **env);
 
-// === BUILT_IN ===
-void    built_in(t_exec **exec, int *i, char ***env);
+
 
 
 typedef struct	s_shell
@@ -174,11 +160,18 @@ typedef struct	s_shell
 	t_signal	*signals;
 	t_tok		*tok;
 	t_exec		*exec;
-	t_env		*env;
-	t_env		*secret;
+	char		**env;
+	char		**secret;
 	//t_malloc	*malloc;
 	// error
 	//tab pid_t child
 }				t_shell;
+int							expansion_len(char **token, t_shell **shell);
+// === WORD PARSING ===
+
+int							word_identification(t_shell **shell);
+
+// === BUILT_IN ===
+void    built_in(t_shell **shell, int *i);
 
 #endif
